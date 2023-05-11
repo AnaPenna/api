@@ -83,6 +83,28 @@ app.delete("/usuarios/:id", (req, res) => {
   }
 });
 
+app.post("/usuarios", (req, res) => {
+  try {
+    console.log("Chamou post", req.body);
+    const { nome, email } = req.body;
+    client.query(
+      "INSERT INTO Usuarios (nome, email) VALUES ($1, $2) RETURNING * ",
+      [nome, email],
+      function (err, result) {
+        if (err) {
+          return console.error("Erro ao executar a qry de INSERT", err);
+        }
+        const { id } = result.rows[0];
+        res.setHeader("id", '${id}');
+        res.status(201).json(result.rows[0]);
+        console.log(result);
+      }
+    );
+  } catch (erro) {
+    console.error(erro);
+  }
+});
+
 app.listen(config.port, () =>
   console.log("Servidor funcionando na porta " + config.port)
 );
