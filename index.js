@@ -95,9 +95,32 @@ app.post("/usuarios", (req, res) => {
           return console.error("Erro ao executar a qry de INSERT", err);
         }
         const { id } = result.rows[0];
-        res.setHeader("id", '${id}');
+        res.setHeader("id", `${id}`);
         res.status(201).json(result.rows[0]);
         console.log(result);
+      }
+    );
+  } catch (erro) {
+    console.error(erro);
+  }
+});
+
+app.put("/usuarios/:id", (req, res) => {
+  try {
+    console.log("Chamou update", req.body);
+    const id = req.params.id;
+    const { nome, email } = req.body;
+    client.query(
+      "UPDATE Usuarios SET nome=$1, email=$2 WHERE id =$3 ",
+      [nome, email, id],
+      function (err, result) {
+        if (err) {
+          return console.error("Erro ao executar a qry de UPDATE", err);
+        } else {
+          res.setHeader("id", id);
+          res.status(202).json({ id: id });
+          console.log(result);
+        }
       }
     );
   } catch (erro) {
